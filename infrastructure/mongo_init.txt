@@ -1,0 +1,16 @@
+# mongosh -port 27017 -u "root" -p
+
+db = db.getSiblingDB("sb");
+db.createUser({
+  user: "sb",
+  pwd: "SB_SECURE_PASSWORD_CHANGE_IT",
+  roles: [
+    {
+      role: "readWrite",
+      db: "sb",
+    },
+  ],
+});
+
+# test connection
+# mongosh sb -port 27017 -authenticationDatabase "sb" -u "sb" -p
