@@ -3,6 +3,7 @@ export interface IRegistrationRequest {
     email: string;
     password: string;
     invitationCode?: string;
+    termsAccepted: boolean;
 }
 
 export interface IRegistrationResponse {
