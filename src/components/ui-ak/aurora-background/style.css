@@ -1,0 +1,45 @@
+@keyframes aurora-animation {
+    0% {
+        background-position: 0 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0 50%;
+    }
+}
+
+#aurora-container {
+    background: linear-gradient(60deg,
+    rgba(0, 0, 20, 0.9),
+    rgba(2, 6, 40, 0.8),
+    rgba(5, 10, 30, 0.7),
+    rgba(15, 8, 40, 0.7),
+    rgba(25, 10, 45, 0.6),
+    rgba(20, 25, 70, 0.7),
+    rgba(5, 10, 30, 0.8),
+    rgba(0, 0, 50, 0.9),
+    rgba(10, 10, 40, 0.8)
+    );
+    background-size: 300% 300%;
+    /*animation: aurora-animation 45s linear infinite; */
+}
+
+#aurora-container::before,
+#aurora-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: inherit;
+    opacity: 0.6;
+    filter: blur(60px);
+}
+
+#aurora-container::after {
+    filter: blur(140px);
+    opacity: 0.4;
+}

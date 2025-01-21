@@ -4,18 +4,23 @@ import {Dialog, DialogContent, DialogTitle} from "@/components/ui/dialog";
 import {VisuallyHidden} from "@radix-ui/react-visually-hidden";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import LoginForm from "@/components/home/LoginForm";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import SignUpForm from "@/components/home/SignUpForm";
 import {Button} from "@/components/ui/button";
 
 type SignInDialogProperties = {
     isOpen: boolean;
     onClose: () => void;
+    tab: "login" | "signup";
 }
 
 export default function SignInDialog(props: SignInDialogProperties) {
-    const [activeTab, setActiveTab] = useState("login");
+    const [activeTab, setActiveTab] = useState<string>(props.tab);
     const [isAfterSuccessSignup, setIsAfterSuccessSignup] = useState(false);
+
+    useEffect(() => {
+        setActiveTab(props.tab);
+    }, [props.tab]);
 
     const onSignUpSwitch = () => {
         setActiveTab("signup");
