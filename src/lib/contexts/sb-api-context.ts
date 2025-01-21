@@ -1,3 +1,5 @@
+"use client"
+
 import {createContext} from "react";
 import SBApi from "@/lib/sb-api/SBApi";
 
