@@ -3,9 +3,9 @@ import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {Checkbox} from "@/components/ui/checkbox";
 import Link from "next/link";
-import {MouseEventHandler, useContext, useState} from "react";
+import {MouseEventHandler, useState} from "react";
 import UIFeatureFlags from "@/lib/ui-flags";
-import {SBApiContext} from "@/lib/contexts/sb-api-context";
+import {useSBStore} from "@/providers/sb-store-provider";
 
 type SignUpFormProperties = {
     onLoginSwitch?: () => void;
@@ -13,7 +13,7 @@ type SignUpFormProperties = {
 }
 
 export default function SignUpForm(props: SignUpFormProperties) {
-    const sbApiCtx = useContext(SBApiContext);
+    const apiRegistration = useSBStore((store) => store.apiRegistration);
 
     const [login, setLogin] = useState("");
     const [email, setEmail] = useState("");
@@ -100,7 +100,7 @@ export default function SignUpForm(props: SignUpFormProperties) {
 
         try {
             setLoading(true);
-            const res = await sbApiCtx.api.registration(login, email, password, invitationCode, termsAccepted);
+            const res = await apiRegistration(login, email, password, invitationCode, termsAccepted);
             if (res) {
                 if (props.onSignupSuccess) {
                     props.onSignupSuccess();

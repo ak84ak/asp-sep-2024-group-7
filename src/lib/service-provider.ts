@@ -2,8 +2,9 @@ import MongoUserRepository from "@/lib/data-access/MongoUserRepository";
 import AuthService from "@/lib/services/AuthService";
 import {IUserRepository} from "@/lib/data-access/IUserRepository";
 import SbInitService from "@/lib/services/SbInitService";
+import MongoModuleRepository from "@/lib/data-access/MongoModuleRepository";
 
-export type SBService = "UserRepository" | "AuthService" | "SbInitService";
+export type SBService = "UserRepository" | "AuthService" | "SbInitService" | "ModuleRepository";
 
 type SBServiceDescriptor = {
     name: string;
@@ -40,6 +41,14 @@ export default class ServiceProvider {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             resolver: async (provider) => {
                 const result = new SbInitService();
+                return result;
+            }
+        });
+
+        this._services.set("ModuleRepository", {
+            name: "ModuleRepository",
+            resolver: async () => {
+                const result = new MongoModuleRepository();
                 return result;
             }
         });

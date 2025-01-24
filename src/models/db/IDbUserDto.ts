@@ -1,10 +1,6 @@
-export default interface IDbUserDto {
-    id: string;
-    createdOn: Date;
-    createdBy: string;
-    updatedOn: Date;
-    updatedBy: string;
+import {IBaseEntityDto} from "@/models/db/IBaseEntityDto";
 
+export default interface IDbUserDto extends IBaseEntityDto{
     login: string;
     loginKey: string;
     email: string;

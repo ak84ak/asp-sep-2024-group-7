@@ -1,0 +1,7 @@
+.ak-module-activity-row .ak-module-activity-row-actions {
+    display: none;
+}
+
+.ak-module-activity-row:hover .ak-module-activity-row-actions {
+    display: flex;
+}

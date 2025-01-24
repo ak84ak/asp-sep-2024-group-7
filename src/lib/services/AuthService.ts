@@ -2,7 +2,7 @@ import IAuthService from "@/lib/services/IAuthService";
 import {IUserRepository} from "@/lib/data-access/IUserRepository";
 import { createSecretKey } from "node:crypto";
 import * as bcrypt from 'bcrypt';
-import { SignJWT } from "jose";
+import {jwtVerify, SignJWT} from "jose";
 import AuthError, {AuthErrorType} from "@/lib/errors/AuthError";
 
 if (process.env.JWT_SECRET === undefined) {
@@ -95,7 +95,7 @@ export default class AuthService implements IAuthService {
         const ph = await bcrypt.hash(password, PROUNDS);
 
         try {
-            await this._userRepository.createUser(login, email, ph);
+            await this._userRepository.createUser(login, login, email, ph);
         } catch (error) {
             return {
                 success: false,
@@ -106,5 +106,32 @@ export default class AuthService implements IAuthService {
         return {
             success: true
         };
+    }
+
+    async getUserFromToken(token: string): Promise<{ id: string; login: string; }> {
+        const key = createSecretKey(process.env.JWT_SECRET!, 'utf8');
+
+        try {
+            const res = await jwtVerify(token, key, {
+                audience: undefined,
+                issuer: undefined,
+                algorithms: ['HS256']
+            });
+
+            if (!res.payload.id || !res.payload.login) {
+                throw new AuthError('Invalid token', AuthErrorType.InvalidToken);
+            }
+
+            return {
+                id: res.payload.id as string,
+                login: res.payload.login as string
+            }
+        } catch (e) {
+            if (e instanceof AuthError) {
+                throw e;
+            }
+
+            throw new AuthError('Token verification fail', AuthErrorType.InvalidToken);
+        }
     }
 }

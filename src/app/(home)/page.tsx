@@ -1,14 +1,11 @@
 "use client"
 
-import AppHeader from "@/components/home/AppHeader";
-import SignInDialog from "@/components/home/SignInDialog";
-import {MouseEventHandler, useContext, useState} from "react";
-import AKAuroraBackground from "@/components/ui-ak/aurora-background/ak-aurora-background";
+import {MouseEventHandler, useContext} from "react";
 import TypewriterEffectMultiple from "@/components/ui-ak/typewriter-multiple";
 import {
     ArrowRightIcon, BellRingIcon, BicepsFlexedIcon,
     ChartNoAxesCombinedIcon, GlobeIcon,
-    GraduationCapIcon, HeartIcon,
+    GraduationCapIcon,
     ImportIcon,
     LockIcon, MessageCircleQuestionIcon
 } from "lucide-react";

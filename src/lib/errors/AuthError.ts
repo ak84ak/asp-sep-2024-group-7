@@ -1,6 +1,7 @@
 export enum AuthErrorType {
     UserNotFound = 1,
     WrongPassword = 2,
+    InvalidToken = 3
 }
 
 export default class AuthError extends Error {
