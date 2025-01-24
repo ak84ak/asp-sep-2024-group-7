@@ -8,7 +8,7 @@ Free to use for personal and commercial use.
 */
 
 import {cn} from "@/lib/utils";
-import {motion, stagger, useAnimate, useInView} from "framer-motion";
+import {motion} from "framer-motion";
 import {useEffect, useState} from "react";
 
 export const TypewriterEffectSmooth = ({

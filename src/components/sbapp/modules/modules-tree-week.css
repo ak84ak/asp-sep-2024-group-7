@@ -1,0 +1,7 @@
+.ak-module-week-row .ak-module-week-row-actions {
+    display: none;
+}
+
+.ak-module-week-row:hover .ak-module-week-row-actions {
+    display: flex;
+}

@@ -2,8 +2,9 @@ import type {Metadata} from "next";
 import {Geist, Geist_Mono} from "next/font/google";
 import "./globals.css";
 import {ThemeProvider} from "@/components/theme-provider";
-import SBContextProvider from "@/components/sb-context-provider";
 import ApiStatus from "@/components/ApiStatus";
+import {SBStoreProvider} from "@/providers/sb-store-provider";
+import {Toaster} from "@/components/ui/sonner";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -31,10 +32,11 @@ export default function RootLayout({
             className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
         <ThemeProvider attribute="class" defaultTheme="dark">
-            <SBContextProvider>
+            <SBStoreProvider>
                 {children}
                 <ApiStatus />
-            </SBContextProvider>
+                <Toaster richColors />
+            </SBStoreProvider>
         </ThemeProvider>
         </body>
         </html>

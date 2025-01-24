@@ -4,6 +4,7 @@ import { GetServiceProvider } from "@/lib/service-provider";
 import IAuthService from "@/lib/services/IAuthService";
 import {IRegistrationRequest, IRegistrationResponse} from "@/models/api/RegistrationModels";
 import BaseApiHandler from "@/lib/api-base/BaseApiHandler";
+import IAuthUser from "@/models/api-internal/IAuthUser";
 
 const flags = {
     registrationEnabled: process.env.SB_FLAGS_REGISTRATION_ENABLED === '1',
@@ -67,7 +68,8 @@ class RegistrationHandler extends BaseApiHandler {
         return true;
     }
 
-    override async handlePOST(request: NextApiRequest, response: NextApiResponse): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    override async handlePOST(request: NextApiRequest, response: NextApiResponse, user?: IAuthUser): Promise<void> {
         const req = await request.body as IRegistrationRequest;
 
         if (!this.validateRegistrationRequest(req, response)) {
@@ -105,5 +107,5 @@ class RegistrationHandler extends BaseApiHandler {
 
 export default async function registrationHandler(req: NextApiRequest, res: NextApiResponse) {
     const handler = new RegistrationHandler();
-    await handler.handle(req, res);
+    await handler.handle(req, res, false);
 }

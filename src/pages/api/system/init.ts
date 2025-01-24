@@ -29,5 +29,5 @@ export default async function loginHandler(req: NextApiRequest, res: NextApiResp
 
     }
     const handler = new SystemInitHandler();
-    await handler.handle(req, res);
+    await handler.handle(req, res, false);
 }

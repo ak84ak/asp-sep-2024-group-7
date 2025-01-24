@@ -4,8 +4,8 @@ import {Label} from "@/components/ui/label";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
-import {MouseEventHandler, useContext, useState} from "react";
-import {SBApiContext} from "@/lib/contexts/sb-api-context";
+import {MouseEventHandler, useState} from "react";
+import {useSBStore} from "@/providers/sb-store-provider";
 
 type LoginFormProperties = {
     onSignUpSwitch?: () => void;
@@ -13,7 +13,7 @@ type LoginFormProperties = {
 }
 
 export default function LoginForm(props: LoginFormProperties) {
-    const sbApiCtx = useContext(SBApiContext);
+    const apiLogin = useSBStore((store) => store.apiLogin);
 
     const [login, setLogin] = useState("");
     const [password, setPassword] = useState("");
@@ -25,7 +25,7 @@ export default function LoginForm(props: LoginFormProperties) {
         setError("");
         try {
             setLoading(true);
-            const res = await sbApiCtx.api.login(login, password);
+            const res = await apiLogin(login, password);
             if (res) {
                 if (props.onLoginSuccess) {
                     props.onLoginSuccess();
