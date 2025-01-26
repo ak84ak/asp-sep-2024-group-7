@@ -12,11 +12,15 @@ import {
 import {IBaseErrorModel} from "@/models/api/BaseApiModels";
 import {
     ICreateActivityRequest,
-    ICreateActivityResponse, IDeleteActivityResponse,
+    ICreateActivityResponse,
+    IDeleteActivityResponse,
+    IImportCourseraActivitiesRequest,
+    IImportCourseraActivitiesResponse,
     IUpdateActivityRequest,
     IUpdateActivityResponse
 } from "@/models/api/ActivitiesModels";
 import {ModuleActivityType} from "@/models/shared/ModuleActivityType";
+import {ICourseraMappedActivity} from "@/models/parsing/CourseraModels";
 
 export interface ISBEvents {
     activeRequestsUpdate: (activeRequests: number) => void;
@@ -384,6 +388,39 @@ export default class SBApi {
                 return true;
             } else {
                 throw new Error(`Activity creation failed: ${response.statusText}, ${JSON.stringify(response.data)}`);
+            }
+        } catch (e) {
+            console.error(e);
+            throw e;
+        }
+    }
+
+    async importCourseraActivities(
+        moduleId: string,
+        week: number,
+        activities: ICourseraMappedActivity[]): Promise<boolean>
+    {
+        if (!this._client) {
+            return false;
+        }
+
+        try {
+            const req: IImportCourseraActivitiesRequest = {
+                week,
+                activities
+            };
+
+            const response = await this.post(`/modules/${moduleId}/import-coursera`, req);
+            if (response.status === 200) {
+                const importCourseraResponse = response.data as IImportCourseraActivitiesResponse;
+                if ((importCourseraResponse as unknown as IBaseErrorModel).error) {
+                    const errorResponse = importCourseraResponse as unknown as IBaseErrorModel;
+                    throw new Error(`Activity import failed: ${errorResponse.error}`);
+                }
+
+                return true;
+            } else {
+                throw new Error(`Activity import failed: ${response.statusText}, ${JSON.stringify(response.data)}`);
             }
         } catch (e) {
             console.error(e);

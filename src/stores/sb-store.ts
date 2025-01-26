@@ -4,6 +4,7 @@ import {devtools} from "zustand/middleware";
 import SBApi from "@/lib/sb-api/SBApi";
 import {ICourseModule, ICourseModuleActivity} from "@/models/api/ModulesModels";
 import {ModuleActivityType} from "@/models/shared/ModuleActivityType";
+import {ICourseraMappedActivity} from "@/models/parsing/CourseraModels";
 
 export type SBState = {
     // General state
@@ -74,6 +75,8 @@ export type SBActions = {
         newOrder?: number,
     }) => Promise<boolean>;
     apiDeleteActivity: (moduleId: string, activityId: string) => Promise<boolean>;
+
+    apiImportCourseraActivities: (moduleId: string, week: number, activities: ICourseraMappedActivity[]) => Promise<boolean>;
 }
 
 export type SbStore = SBState & SBActions;
@@ -272,6 +275,14 @@ export const createSbStore = (initState: SBState = defaultInitState) => {
                         set(() => ({
                             modulesPageSelectedActivity: undefined
                         }), undefined, "apiDeleteActivity");
+                        await get().apiLoadModules(true);
+                    }
+                    return res;
+                },
+                apiImportCourseraActivities: async (moduleId: string, week: number, activities: ICourseraMappedActivity[]): Promise<boolean> => {
+                    const res = await api.importCourseraActivities(moduleId, week, activities);
+                    if (res) {
+                        // Force reload modules
                         await get().apiLoadModules(true);
                     }
                     return res;

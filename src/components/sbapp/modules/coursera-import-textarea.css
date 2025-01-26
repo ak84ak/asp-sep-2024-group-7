@@ -1,0 +1,8 @@
+.coursera-import-area h1, .coursera-import-area h2, .coursera-import-area h3, .coursera-import-area h4, .coursera-import-area h5, .coursera-import-area h6 {
+    font-size: 15px !important;
+}
+
+.coursera-import-area button {
+    background: none !important;
+    border: none !important;
+}

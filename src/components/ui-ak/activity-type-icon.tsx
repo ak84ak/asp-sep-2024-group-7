@@ -1,4 +1,11 @@
-import {BookOpenTextIcon, CircleHelpIcon, ClapperboardIcon, FlaskConicalIcon, LucideProps} from "lucide-react";
+import {
+    BookOpenTextIcon,
+    CircleHelpIcon,
+    ClapperboardIcon,
+    FlaskConicalIcon,
+    LucideProps,
+    MessageCircleMoreIcon, MessageCircleQuestionIcon, MonitorCheckIcon, UsersIcon
+} from "lucide-react";
 import * as react from "react";
 
 export type ActivityTypeIconProperties = {
@@ -13,6 +20,14 @@ export default function ActivityTypeIcon(props: ActivityTypeIconProperties & Omi
             return (<BookOpenTextIcon {...props} />)
         case "lab":
             return (<FlaskConicalIcon {...props} />)
+        case "discussion":
+            return (<MessageCircleMoreIcon {...props} />)
+        case "quiz":
+            return (<MessageCircleQuestionIcon {...props} />)
+        case "practice":
+            return (<MonitorCheckIcon {...props} />)
+        case "peer-assignment":
+            return (<UsersIcon {...props} />)
         default:
             return (<CircleHelpIcon {...props} />)
     }

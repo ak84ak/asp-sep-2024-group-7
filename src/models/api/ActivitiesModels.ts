@@ -44,3 +44,24 @@ export interface IDeleteActivityResponse {
     error?: string;
     errorType?: string;
 }
+
+export interface IImportCourseraActivitiesRequest {
+    week: number;
+    activities: IImportCourseraActivity[];
+}
+
+export interface IImportCourseraActivity {
+    name: string,
+    type: ModuleActivityType,
+    duration: number,
+    durationNotParsed: boolean,
+    isCompleted: boolean,
+    completionDate?: Date
+    deadline?: Date;
+}
+
+export interface IImportCourseraActivitiesResponse {
+    success: boolean;
+    error?: string;
+    errorType?: string;
+}
