@@ -3,6 +3,7 @@ import {useState} from "react";
 import ModulesTreeModule from "@/components/sbapp/modules/modules-tree-module";
 import AddActivityManual from "@/components/sbapp/modules/add-activity-manual";
 import {toast} from "sonner";
+import CourseraImportDialog from "@/components/sbapp/modules/coursera-import-dialog";
 
 export type ModulesTreeProperties = {
     modules: ICourseModule[];
@@ -25,7 +26,9 @@ export default function ModulesTree(props: ModulesTreeProperties) {
     };
 
     const onImport = (moduleId: string, week: number) => {
-
+        setImportModuleId(moduleId);
+        setImportWeek(week);
+        setIsImportOpen(true)
     }
 
     const onAddSuccess = () => {
@@ -58,6 +61,15 @@ export default function ModulesTree(props: ModulesTreeProperties) {
                     }}
                     onAddSuccess={onAddSuccess}
                 />
+            )}
+            {isImportOpen && importModuleId && importWeek !== undefined && (
+                <CourseraImportDialog week={importWeek}
+                                      moduleId={importModuleId}
+                                      onClose={() => {
+                                          setIsImportOpen(false);
+                                          setImportModuleId(undefined);
+                                          setImportWeek(undefined);
+                                      }}/>
             )}
         </>
     )

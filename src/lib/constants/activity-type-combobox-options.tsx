@@ -1,4 +1,10 @@
-import {BookOpenTextIcon, CircleHelpIcon, ClapperboardIcon, FlaskConicalIcon} from "lucide-react";
+import {
+    BookOpenTextIcon,
+    CircleHelpIcon,
+    ClapperboardIcon,
+    FlaskConicalIcon,
+    MessageCircleMoreIcon, MessageCircleQuestionIcon, MonitorCheckIcon, UsersIcon
+} from "lucide-react";
 
 const getActivityTypeComboBoxOptions = () => {
     return [
@@ -16,6 +22,26 @@ const getActivityTypeComboBoxOptions = () => {
             id: "lab",
             title: "Lab",
             icon: <FlaskConicalIcon/>
+        },
+        {
+            id: "discussion",
+            title: "Discussion",
+            icon: <MessageCircleMoreIcon/>
+        },
+        {
+            id: "quiz",
+            title: "Quiz",
+            icon: <MessageCircleQuestionIcon/>
+        },
+        {
+            id: "practice",
+            title: "Practice",
+            icon: <MonitorCheckIcon/>
+        },
+        {
+            id: "peer-assignment",
+            title: "Peer Assignment",
+            icon: <UsersIcon/>
         },
         {
             id: "other",
