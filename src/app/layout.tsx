@@ -5,6 +5,8 @@ import {ThemeProvider} from "@/components/theme-provider";
 import ApiStatus from "@/components/ApiStatus";
 import {SBStoreProvider} from "@/providers/sb-store-provider";
 import {Toaster} from "@/components/ui/sonner";
+import Script from "next/script";
+import liveChatScript from "@/app/live-chat";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -38,6 +40,7 @@ export default function RootLayout({
                 <Toaster richColors />
             </SBStoreProvider>
         </ThemeProvider>
+        <Script id="ak-tawk-script" dangerouslySetInnerHTML={{ __html: liveChatScript }} />
         </body>
         </html>
     );

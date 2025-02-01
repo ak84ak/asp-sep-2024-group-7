@@ -1,6 +1,6 @@
 "use client"
 
-export default function DashboardPage() {
+export default function PlanningPage() {
     return (
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
             <div className="px-4 pt-4">
