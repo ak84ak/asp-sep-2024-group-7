@@ -22,6 +22,8 @@ export interface ICourseModuleActivity {
     duration: number;
     type: ModuleActivityType;
     order: number;
+
+    deadline?: Date;
 }
 
 export interface IGetPredefinedModulesResponse {

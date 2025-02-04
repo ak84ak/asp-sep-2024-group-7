@@ -21,6 +21,8 @@ import {
 } from "@/models/api/ActivitiesModels";
 import {ModuleActivityType} from "@/models/shared/ModuleActivityType";
 import {ICourseraMappedActivity} from "@/models/parsing/CourseraModels";
+import {IGetUserAvailableTimeResponse, IUserAvailableTime} from "@/models/api/UserAvailableTimeModels";
+import testData from "@/lib/sb-api/test-data";
 
 export interface ISBEvents {
     activeRequestsUpdate: (activeRequests: number) => void;
@@ -549,6 +551,35 @@ export default class SBApi {
             throw e;
         }
     }
+
+    async getUserAvailableTime(): Promise<IUserAvailableTime | null> {
+        if (!this._client) {
+            return null;
+        }
+
+        if (!this._isAuthenticated) {
+            return null;
+        }
+
+        try {
+            const response = await this.get("/user/available-time");
+            if (response.status === 200) {
+                const res = response.data as IGetUserAvailableTimeResponse;
+                if (!res.availableTime) {
+                    throw new Error("No data returned");
+                }
+                return res.availableTime;
+            } else if (response.status === 404 && testData.availableTime) {
+                return testData.availableTime;
+            } else {
+                throw new Error(`Get user modules failed: ${response.statusText}, ${JSON.stringify(response.data)}`);
+            }
+        } catch (e) {
+            console.error(e);
+            throw e;
+        }
+    }
+
 
     on<E extends keyof ISBEvents>(event: E, callback: ISBEvents[E]) {
         return this._emitter.on(event, callback)

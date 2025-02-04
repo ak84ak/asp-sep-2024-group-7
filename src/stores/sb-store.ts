@@ -5,6 +5,7 @@ import SBApi from "@/lib/sb-api/SBApi";
 import {ICourseModule, ICourseModuleActivity} from "@/models/api/ModulesModels";
 import {ModuleActivityType} from "@/models/shared/ModuleActivityType";
 import {ICourseraMappedActivity} from "@/models/parsing/CourseraModels";
+import {IUserAvailableTime} from "@/models/api/UserAvailableTimeModels";
 
 export type SBState = {
     // General state
@@ -25,6 +26,9 @@ export type SBState = {
     // Modules page
     modulesPageSelectedModule?: ICourseModule;
     modulesPageSelectedActivity?: ICourseModuleActivity;
+
+    // Planning
+    availableTime: IUserAvailableTime | undefined;
 }
 
 export type SBActions = {
@@ -77,6 +81,8 @@ export type SBActions = {
     apiDeleteActivity: (moduleId: string, activityId: string) => Promise<boolean>;
 
     apiImportCourseraActivities: (moduleId: string, week: number, activities: ICourseraMappedActivity[]) => Promise<boolean>;
+
+    apiLoadAvailableTime: () => Promise<void>;
 }
 
 export type SbStore = SBState & SBActions;
@@ -286,6 +292,10 @@ export const createSbStore = (initState: SBState = defaultInitState) => {
                         await get().apiLoadModules(true);
                     }
                     return res;
+                },
+                apiLoadAvailableTime: async () => {
+                    const availableTime = await api.getUserAvailableTime();
+                    set(() => ({availableTime: availableTime ?? undefined}), undefined, "apiLoadAvailableTime");
                 }
             })));
 }
