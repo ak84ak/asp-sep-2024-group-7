@@ -6,6 +6,9 @@ import IAuthUser from "@/models/api-internal/IAuthUser";
 import {IModuleRepository} from "@/lib/data-access/IModuleRepository";
 import {ICreateModuleRequest, ICreateModuleRequestActivity, ICreateModuleResponse} from "@/models/api/ModulesModels";
 
+// TODO: Move to config
+const defaultModuleStartDate = new Date(2024, 9, 14, 12, 0, 0, 0);
+
 class ModulesHandler extends BaseApiHandler {
     handlerName: string = "ModulesHandler";
 
@@ -25,6 +28,7 @@ class ModulesHandler extends BaseApiHandler {
         name: string,
         code: string,
         weeks: number,
+        startDate?: Date,
         activities: ICreateModuleRequestActivity[]
     }, response: NextApiResponse)
     {
@@ -49,6 +53,11 @@ class ModulesHandler extends BaseApiHandler {
             return false;
         }
 
+        if (req.startDate === undefined) {
+            this.setInvalidCreateModuleResponse(response, 400, 'Start date is missing', 'Validation');
+            return false;
+        }
+
         if (req.activities === undefined) {
             this.setInvalidCreateModuleResponse(response, 400, 'Activities are missing', 'Validation');
             return false;
@@ -69,14 +78,15 @@ class ModulesHandler extends BaseApiHandler {
         const name = req.name?.trim() || "";
         const code = req.code?.trim() || "";
         const weeks = req.totalWeeks || 0;
+        const startDate = req.startDate ? new Date(req.startDate) : undefined;
         const activities = req.activities || undefined;
 
-        if (!this.validateCreateModuleRequest({ universityId, name, code, weeks, activities }, response)) {
+        if (!this.validateCreateModuleRequest({ universityId, name, code, weeks, startDate, activities }, response)) {
             return;
         }
 
         try {
-            const m = await moduleRepository.createModule(user!.login, user!.id, universityId, name, code, weeks, activities);
+            const m = await moduleRepository.createModule(user!.login, user!.id, universityId, name, code, weeks, startDate!, activities);
 
             if (!m) {
                 this.setInvalidCreateModuleResponse(response, 500, 'Failed to create module', 'Internal');
@@ -92,13 +102,14 @@ class ModulesHandler extends BaseApiHandler {
                     code: m.code,
                     isCompleted: m.isCompleted,
                     totalWeeks: m.totalWeeks,
+                    startDate: m.startDate ? m.startDate : defaultModuleStartDate.toISOString(),
                     activities: m.activities.map(a => ({
                         id: a.id,
                         version: a.version,
                         week: a.week,
                         name: a.name,
                         isCompleted: a.isCompleted,
-                        completionDate: a.completionDate,
+                        completionDate: a.completionDate ? a.completionDate : undefined,
                         duration: a.duration,
                         type: a.type,
                         order: a.order

@@ -1,4 +1,3 @@
-import {ICourseModule} from "@/models/api/ModulesModels";
 import {
     ChevronDownIcon,
     ChevronRightIcon,
@@ -14,6 +13,7 @@ import ModulesTreeWeek from "@/components/sbapp/modules/modules-tree-week";
 import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
 import {Tooltip} from "react-tooltip";
 import {useSBStore} from "@/providers/sb-store-provider";
+import {ICourseModule} from "@/models/domain/ModulesModels";
 
 export type ModulesTreeItemProperties = {
     module: ICourseModule;

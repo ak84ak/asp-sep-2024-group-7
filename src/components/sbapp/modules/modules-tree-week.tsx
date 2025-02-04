@@ -1,4 +1,3 @@
-import {ICourseModule, ICourseModuleActivity} from "@/models/api/ModulesModels";
 import {useEffect, useState} from "react";
 import {Button} from "@/components/ui/button";
 import {
@@ -16,6 +15,7 @@ import './modules-tree-week.css';
 import {Tooltip} from 'react-tooltip'
 import ModulesTreeActivity from "@/components/sbapp/modules/modules-tree-activity";
 import {formatDuration} from "@/lib/ui-utils";
+import {ICourseModule, ICourseModuleActivity} from "@/models/domain/ModulesModels";
 
 export type ModulesTreeWeekProperties = {
     week: number;

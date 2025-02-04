@@ -1,11 +1,11 @@
 import {createStore} from "zustand/vanilla";
-import {ICurrentUser} from "@/models/api/CurrentUserModels";
 import {devtools} from "zustand/middleware";
 import SBApi from "@/lib/sb-api/SBApi";
-import {ICourseModule, ICourseModuleActivity} from "@/models/api/ModulesModels";
 import {ModuleActivityType} from "@/models/shared/ModuleActivityType";
 import {ICourseraMappedActivity} from "@/models/parsing/CourseraModels";
 import {IUserAvailableTime} from "@/models/api/UserAvailableTimeModels";
+import {ICurrentUser} from "@/models/domain/UserModels";
+import {ICourseModule, ICourseModuleActivity} from "@/models/domain/ModulesModels";
 
 export type SBState = {
     // General state
@@ -52,8 +52,16 @@ export type SBActions = {
     apiLoadCurrentUser: () => Promise<ICurrentUser | null>;
 
     apiLoadModules: (forceReload: boolean) => Promise<ICourseModule[] | undefined>;
-    apiCreateModule: (name: string, code: string, totalWeeks: number, universityId: string, activities: ICourseModuleActivity[]) => Promise<boolean>;
-    apiCreateActivity: (moduleId: string, week: number, name: string, isCompleted: boolean, completionDate: Date | undefined, duration: number, type: ModuleActivityType) => Promise<boolean>;
+    apiCreateModule: (name: string, code: string, totalWeeks: number, startDate: Date, universityId: string, activities: ICourseModuleActivity[]) => Promise<boolean>;
+    apiCreateActivity: (
+        moduleId: string,
+        week: number,
+        name: string,
+        isCompleted: boolean,
+        completionDate: Date | undefined,
+        duration: number,
+        type: ModuleActivityType,
+        deadline: Date | undefined) => Promise<boolean>;
     apiUpdateModule: (moduleId: string, updateModuleRequest: {
         isNameUpdated: boolean,
         newName?: string,
@@ -61,6 +69,8 @@ export type SBActions = {
         newCode?: string,
         isTotalWeeksUpdated: boolean,
         newTotalWeeks?: number,
+        isStartDateUpdated: boolean,
+        newStartDate?: Date | undefined,
     }) => Promise<boolean>;
     apiDeleteModule: (moduleId: string) => Promise<boolean>;
 
@@ -77,6 +87,8 @@ export type SBActions = {
         newType?: ModuleActivityType,
         isOrderUpdated: boolean,
         newOrder?: number,
+        isDeadlineUpdated: boolean,
+        newDeadline?: Date | undefined
     }) => Promise<boolean>;
     apiDeleteActivity: (moduleId: string, activityId: string) => Promise<boolean>;
 
@@ -93,7 +105,8 @@ export const defaultInitState: SBState = {
     apiActiveRequests: 0,
     user: undefined,
 
-    modules: undefined
+    modules: undefined,
+    availableTime: undefined,
 }
 
 export const createSbStore = (initState: SBState = defaultInitState) => {
@@ -209,16 +222,24 @@ export const createSbStore = (initState: SBState = defaultInitState) => {
 
                     return modules;
                 },
-                apiCreateModule: async (name: string, code: string, totalWeeks: number, universityId: string, activities: ICourseModuleActivity[]) => {
-                    const res = await api.createModule(name, code, totalWeeks, universityId, activities);
+                apiCreateModule: async (name: string, code: string, totalWeeks: number, startDate: Date, universityId: string, activities: ICourseModuleActivity[]) => {
+                    const res = await api.createModule(name, code, totalWeeks, startDate, universityId, activities);
                     if (res) {
                         // Force reload modules
                         await get().apiLoadModules(true);
                     }
                     return res;
                 },
-                apiCreateActivity: async (moduleId: string, week: number, name: string, isCompleted: boolean, completionDate: Date | undefined, duration: number, type: ModuleActivityType) => {
-                    const res = await api.createActivity(moduleId, week, name, isCompleted, completionDate, duration, type);
+                apiCreateActivity: async (
+                    moduleId: string,
+                    week: number,
+                    name: string,
+                    isCompleted: boolean,
+                    completionDate: Date | undefined,
+                    duration: number,
+                    type: ModuleActivityType,
+                    deadline: Date | undefined) => {
+                    const res = await api.createActivity(moduleId, week, name, isCompleted, completionDate, duration, type, deadline);
                     if (res) {
                         // Force reload modules
                         await get().apiLoadModules(true);
@@ -232,6 +253,8 @@ export const createSbStore = (initState: SBState = defaultInitState) => {
                     newCode?: string,
                     isTotalWeeksUpdated: boolean,
                     newTotalWeeks?: number,
+                    isStartDateUpdated: boolean,
+                    newStartDate?: Date | undefined,
                 }): Promise<boolean> => {
                     const res = await api.updateModule(moduleId, updateModuleRequest);
                     if (res) {
@@ -266,6 +289,8 @@ export const createSbStore = (initState: SBState = defaultInitState) => {
                     newType?: ModuleActivityType,
                     isOrderUpdated: boolean,
                     newOrder?: number,
+                    isDeadlineUpdated: boolean,
+                    newDeadline?: Date | undefined
                 }): Promise<boolean> => {
                     const res = await api.updateActivity(moduleId, activityId, updateActivityRequest);
                     if (res) {

@@ -14,6 +14,7 @@ import {
 import {MouseEventHandler, useEffect, useState} from "react";
 import {cn} from "@/lib/utils";
 import {toast} from "sonner";
+import AKDatePicker from "@/components/ui-ak/AKDatePicker";
 
 export default function ModulesDetailsModule() {
     const selectedModule = useSBStore((store) => store.modulesPageSelectedModule);
@@ -23,6 +24,7 @@ export default function ModulesDetailsModule() {
     const [name, setName] = useState("");
     const [code, setCode] = useState("");
     const [weeks, setWeeks] = useState(22);
+    const [startDate, setStartDate] = useState<Date | undefined>(undefined);
     const [error, setError] = useState("");
 
     const [loading, setLoading] = useState(false);
@@ -36,12 +38,14 @@ export default function ModulesDetailsModule() {
             setName("");
             setCode("");
             setWeeks(22);
+            setStartDate(undefined);
             return;
         }
 
         setName(selectedModule.name);
         setCode(selectedModule.code);
         setWeeks(selectedModule.totalWeeks);
+        setStartDate(selectedModule.startDate);
 
     }, [selectedModule]);
 
@@ -51,8 +55,13 @@ export default function ModulesDetailsModule() {
             return;
         }
 
-        setHasChanges(name !== selectedModule.name || code !== selectedModule.code || weeks !== selectedModule.totalWeeks);
-    }, [selectedModule, name, code, weeks]);
+        setHasChanges(
+            name !== selectedModule.name
+            || code !== selectedModule.code
+            || weeks !== selectedModule.totalWeeks
+            || startDate !== selectedModule.startDate
+        );
+    }, [selectedModule, name, code, weeks, startDate]);
 
     if (!selectedModule) {
         return null;
@@ -118,7 +127,9 @@ export default function ModulesDetailsModule() {
                     isCodeUpdated: code !== selectedModule.code,
                     newCode: code,
                     isTotalWeeksUpdated: weeks !== selectedModule.totalWeeks,
-                    newTotalWeeks: weeks
+                    newTotalWeeks: weeks,
+                    isStartDateUpdated: startDate !== selectedModule.startDate,
+                    newStartDate: startDate
                 }
                 await apiUpdateModule(selectedModule.id, updateRequest);
                 toast.success("Module updated");
@@ -191,6 +202,18 @@ export default function ModulesDetailsModule() {
                                     setWeeks(v[0])
                                 }}/>
                     </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="code">First week start date</Label>
+                        <AKDatePicker
+                            className="w-full"
+                            value={startDate}
+                            onChange={(date) => {
+                                setStartDate(date);
+                                setError("");
+                            }}
+                            placeholder="Pick first week start date (Monday)"
+                        />
+                    </div>
                     {error && <div className="text-red-500 text-sm">{error}</div>}
                     <Button type="submit" className={cn("w-full cursor-pointer", hasChanges ? "text-orange-500" : null)}
                             variant="outline"
@@ -229,6 +252,9 @@ export default function ModulesDetailsModule() {
                                     )}
                                     {weeks !== selectedModule.totalWeeks && (
                                         <><strong>Total weeks:</strong> {weeks}<br/></>
+                                    )}
+                                    {startDate !== selectedModule.startDate && (
+                                        <><strong>Start date:</strong> {startDate?.toDateString()}<br/></>
                                     )}
                                 </>
                             ) : (

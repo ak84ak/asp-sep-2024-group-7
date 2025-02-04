@@ -4,6 +4,7 @@ services:
   mongodb:
     image: mongo:latest
     container_name: mongodb
+    restart: always
     hostname: mongodb
     volumes:
       - ${MONGO_DATA_PATH}:/data/db/
@@ -21,7 +22,7 @@ services:
   mongo-express:
     image: mongo-express:latest
     container_name: mongo-express
-    restart: always
+    restart: "no"
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}

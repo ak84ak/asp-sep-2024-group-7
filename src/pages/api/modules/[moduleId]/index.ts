@@ -10,6 +10,9 @@ import {
     IUpdateModuleResponse
 } from "@/models/api/ModulesModels";
 
+// TODO: Move to config
+const defaultModuleStartDate = new Date(2024, 9, 14, 12, 0, 0, 0);
+
 class ModuleByIdIndexHandler extends BaseApiHandler {
     handlerName: string = "ModuleByIdIndexHandler";
 
@@ -87,13 +90,17 @@ class ModuleByIdIndexHandler extends BaseApiHandler {
             newCode?: string,
             isTotalWeeksUpdated: boolean,
             newTotalWeeks?: number,
+            isStartDateUpdated: boolean,
+            newStartDate?: string | undefined,
         } = {
             isNameUpdated: inReq.isNameUpdated,
             newName: inReq.newName?.trim(),
             isCodeUpdated: inReq.isCodeUpdated,
             newCode: inReq.newCode?.trim(),
             isTotalWeeksUpdated: inReq.isTotalWeeksUpdated,
-            newTotalWeeks: inReq.newTotalWeeks
+            newTotalWeeks: inReq.newTotalWeeks,
+            isStartDateUpdated: inReq.isStartDateUpdated,
+            newStartDate: inReq.newStartDate,
         };
 
         if (!this.validateUpdateModuleRequest(req, response)) {
@@ -139,13 +146,14 @@ class ModuleByIdIndexHandler extends BaseApiHandler {
                     code: m.code,
                     isCompleted: m.isCompleted,
                     totalWeeks: m.totalWeeks,
+                    startDate: m.startDate ? m.startDate : defaultModuleStartDate.toISOString(),
                     activities: m.activities.map(a => ({
                         id: a.id,
                         version: a.version,
                         week: a.week,
                         name: a.name,
                         isCompleted: a.isCompleted,
-                        completionDate: a.completionDate,
+                        completionDate: a.completionDate ? a.completionDate : undefined,
                         duration: a.duration,
                         type: a.type,
                         order: a.order

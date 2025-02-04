@@ -9,6 +9,7 @@ export interface IModuleDto extends IBaseEntityDto {
     code: string;
     isCompleted: boolean;
     totalWeeks: number;
+    startDate: string;
     isPredefined: boolean;
     activities: IModuleActivityDto[];
 }
@@ -18,7 +19,7 @@ export interface IModuleActivityDto extends IBaseEntityDto {
     week: number;
     name: string;
     isCompleted: boolean;
-    completionDate?: Date;
+    completionDate?: string;
     duration: number;
     type: ModuleActivityType;
     order: number;

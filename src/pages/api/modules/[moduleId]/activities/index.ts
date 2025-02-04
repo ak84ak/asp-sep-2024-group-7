@@ -77,11 +77,13 @@ class ModuleByIdActivitiesIndexHandler extends BaseApiHandler {
 
         const moduleId = request.query.moduleId as string;
         const week = req.week || 0;
+        const completionDate = req.completionDate ? new Date(req.completionDate) : undefined;
         const name = req.name?.trim() || "";
         const duration = req.duration || 0;
+        const deadline = req.deadline ? new Date(req.deadline) : undefined;
         const type = req.type ? mapModuleActivityType(req.type) : undefined;
 
-        if (!this.validateCreateActivityRequest({ moduleId, week, name, duration, type, isCompleted: req.isCompleted, completionDate: req.completionDate }, response)) {
+        if (!this.validateCreateActivityRequest({ moduleId, week, name, duration, type, isCompleted: req.isCompleted, completionDate }, response)) {
             return;
         }
 
@@ -117,9 +119,10 @@ class ModuleByIdActivitiesIndexHandler extends BaseApiHandler {
                 week,
                 name,
                 req.isCompleted,
-                req.completionDate,
+                completionDate,
                 duration,
                 type,
+                deadline,
                 order);
 
             if (!a) {
@@ -135,7 +138,7 @@ class ModuleByIdActivitiesIndexHandler extends BaseApiHandler {
                     week: a.week,
                     name: a.name,
                     isCompleted: a.isCompleted,
-                    completionDate: a.completionDate,
+                    completionDate: a.completionDate ? a.completionDate : undefined,
                     duration: a.duration,
                     type: a.type,
                     order: a.order

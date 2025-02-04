@@ -22,6 +22,7 @@ import {formatDuration} from "@/lib/ui-utils";
 import {getActivityTypeComboBoxOptions} from "@/lib/constants/activity-type-combobox-options";
 import {toast} from "sonner";
 import {mapModuleActivityType} from "@/models/shared/ModuleActivityType";
+import {ICourseModuleActivity} from "@/models/domain/ModulesModels";
 
 export default function ModulesDetailsActivity() {
     const modules = useSBStore((store) => store.modules);
@@ -149,7 +150,7 @@ export default function ModulesDetailsActivity() {
         setIsConfirmationOpen(false);
         try {
             setLoading(true);
-            const moduleId = modules.find(m => m.activities.find(a => a.id === selectedActivity.id))?.id;
+            const moduleId = modules.find(m => m.activities.find((a: ICourseModuleActivity) => a.id === selectedActivity.id))?.id;
 
             if (!moduleId) {
                 throw new Error("Module not found");
@@ -168,7 +169,10 @@ export default function ModulesDetailsActivity() {
                     isTypeUpdated: activityType !== selectedActivity.type,
                     newType: activityType !== selectedActivity.type ? mapModuleActivityType(activityType!) : undefined,
                     isOrderUpdated: order !== selectedActivity.order,
-                    newOrder: order
+                    newOrder: order,
+                    // TODO: Add deadline update
+                    isDeadlineUpdated: false,
+                    newDeadline: undefined
                 }
                 await apiUpdateActivity(moduleId, selectedActivity.id, updateRequest);
                 toast.success("Activity updated");

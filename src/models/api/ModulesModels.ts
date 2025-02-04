@@ -1,6 +1,6 @@
 import {ModuleActivityType} from "@/models/shared/ModuleActivityType";
 
-export interface ICourseModule {
+export interface ICourseModuleApiModel {
     id: string;
     version: number;
 
@@ -8,36 +8,38 @@ export interface ICourseModule {
     code: string;
     isCompleted: boolean;
     totalWeeks: number;
-    activities: ICourseModuleActivity[];
+    startDate: string;
+    activities: ICourseModuleActivityApiModel[];
 }
 
-export interface ICourseModuleActivity {
+export interface ICourseModuleActivityApiModel {
     id: string;
     version: number;
 
     week: number;
     name: string;
     isCompleted: boolean;
-    completionDate?: Date;
+    completionDate?: string;
     duration: number;
     type: ModuleActivityType;
     order: number;
 
-    deadline?: Date;
+    deadline?: string;
 }
 
 export interface IGetPredefinedModulesResponse {
-    modules: ICourseModule[];
+    modules: ICourseModuleApiModel[];
 }
 
 export interface IGetUserModulesResponse {
-    modules: ICourseModule[];
+    modules: ICourseModuleApiModel[];
 }
 
 export interface ICreateModuleRequest {
     name: string;
     code: string;
     totalWeeks: number;
+    startDate: string;
     universityId: string;
     activities: ICreateModuleRequestActivity[];
 }
@@ -54,7 +56,7 @@ export interface ICreateModuleResponse {
     success: boolean;
     error?: string;
     errorType?: string;
-    module?: ICourseModule;
+    module?: ICourseModuleApiModel;
 }
 
 export interface IUpdateModuleRequest {
@@ -64,13 +66,15 @@ export interface IUpdateModuleRequest {
     newCode?: string,
     isTotalWeeksUpdated: boolean,
     newTotalWeeks?: number,
+    isStartDateUpdated: boolean,
+    newStartDate?: string,
 }
 
 export interface IUpdateModuleResponse {
     success: boolean;
     error?: string;
     errorType?: string;
-    module?: ICourseModule;
+    module?: ICourseModuleApiModel;
 }
 
 export interface IDeleteModuleResponse {

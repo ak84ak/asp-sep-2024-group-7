@@ -2,9 +2,8 @@ import axios, {AxiosInstance, AxiosResponse} from "axios";
 import {ILoginRequest, ILoginResponse} from "@/models/api/LoginModels";
 import {IRegistrationRequest, IRegistrationResponse} from "@/models/api/RegistrationModels";
 import {createNanoEvents, Emitter} from "nanoevents";
-import {ICurrentUser, IGetCurrentUserResponse} from "@/models/api/CurrentUserModels";
+import {IGetCurrentUserResponse} from "@/models/api/CurrentUserModels";
 import {
-    ICourseModule, ICourseModuleActivity,
     ICreateModuleRequest,
     ICreateModuleResponse, IDeleteModuleResponse,
     IGetPredefinedModulesResponse, IGetUserModulesResponse, IUpdateModuleRequest, IUpdateModuleResponse
@@ -23,6 +22,9 @@ import {ModuleActivityType} from "@/models/shared/ModuleActivityType";
 import {ICourseraMappedActivity} from "@/models/parsing/CourseraModels";
 import {IGetUserAvailableTimeResponse, IUserAvailableTime} from "@/models/api/UserAvailableTimeModels";
 import testData from "@/lib/sb-api/test-data";
+import {ICurrentUser} from "@/models/domain/UserModels";
+import {ICourseModule, ICourseModuleActivity} from "@/models/domain/ModulesModels";
+import {mapModuleApiToDomain} from "@/lib/mapping/CourseModulesMapping";
 
 export interface ISBEvents {
     activeRequestsUpdate: (activeRequests: number) => void;
@@ -288,7 +290,7 @@ export default class SBApi {
                 if (!res.modules) {
                     throw new Error("No modules returned");
                 }
-                return res.modules;
+                return res.modules.map(mapModuleApiToDomain);
             } else {
                 throw new Error(`Get predefined modules failed: ${response.statusText}, ${JSON.stringify(response.data)}`);
             }
@@ -314,7 +316,7 @@ export default class SBApi {
                 if (!res.modules) {
                     throw new Error("No modules returned");
                 }
-                return res.modules;
+                return res.modules.map(mapModuleApiToDomain);
             } else {
                 throw new Error(`Get user modules failed: ${response.statusText}, ${JSON.stringify(response.data)}`);
             }
@@ -324,7 +326,7 @@ export default class SBApi {
         }
     }
 
-    async createModule(name: string, code: string, weeks: number, universityId: string, activities: ICourseModuleActivity[]): Promise<boolean> {
+    async createModule(name: string, code: string, weeks: number, startDate: Date, universityId: string, activities: ICourseModuleActivity[]): Promise<boolean> {
         if (!this._client) {
             return false;
         }
@@ -334,6 +336,7 @@ export default class SBApi {
                 name,
                 code,
                 totalWeeks: weeks,
+                startDate: startDate.toISOString(),
                 universityId,
                 activities
             };
@@ -363,7 +366,8 @@ export default class SBApi {
         isCompleted: boolean,
         completionDate: Date | undefined,
         duration: number,
-        type: ModuleActivityType): Promise<boolean> {
+        type: ModuleActivityType,
+        deadline: Date | undefined): Promise<boolean> {
 
         if (!this._client) {
             return false;
@@ -374,9 +378,10 @@ export default class SBApi {
                 week,
                 name,
                 isCompleted,
-                completionDate,
+                completionDate: completionDate ? completionDate.toISOString() : undefined,
                 duration,
-                type
+                type,
+                deadline: deadline ? deadline.toISOString() : undefined,
             };
 
             const response = await this.post(`/modules/${moduleId}/activities`, req);
@@ -409,7 +414,15 @@ export default class SBApi {
         try {
             const req: IImportCourseraActivitiesRequest = {
                 week,
-                activities
+                activities: activities.map((a: ICourseraMappedActivity) => ({
+                    name: a.name,
+                    type: a.type,
+                    duration: a.duration,
+                    durationNotParsed: a.durationNotParsed,
+                    isCompleted: a.isCompleted,
+                    completionDate: a.completionDate ? a.completionDate.toISOString() : undefined,
+                    deadline: a.deadline ? a.deadline.toISOString() : undefined
+                }))
             };
 
             const response = await this.post(`/modules/${moduleId}/import-coursera`, req);
@@ -437,6 +450,8 @@ export default class SBApi {
         newCode?: string,
         isTotalWeeksUpdated: boolean,
         newTotalWeeks?: number,
+        isStartDateUpdated: boolean,
+        newStartDate?: Date | undefined
     }): Promise<boolean>
     {
         if (!this._client) {
@@ -444,7 +459,16 @@ export default class SBApi {
         }
 
         try {
-            const req: IUpdateModuleRequest = updateModuleRequest;
+            const req: IUpdateModuleRequest = {
+                isNameUpdated: updateModuleRequest.isNameUpdated,
+                newName: updateModuleRequest.newName,
+                isCodeUpdated: updateModuleRequest.isCodeUpdated,
+                newCode: updateModuleRequest.newCode,
+                isTotalWeeksUpdated: updateModuleRequest.isTotalWeeksUpdated,
+                newTotalWeeks: updateModuleRequest.newTotalWeeks,
+                isStartDateUpdated: updateModuleRequest.isStartDateUpdated,
+                newStartDate: updateModuleRequest.newStartDate ? updateModuleRequest.newStartDate.toISOString() : undefined
+            };
 
             const response = await this.put(`/modules/${moduleId}`, req);
             if (response.status === 200) {
@@ -501,6 +525,8 @@ export default class SBApi {
         newType?: ModuleActivityType,
         isOrderUpdated: boolean,
         newOrder?: number,
+        isDeadlineUpdated: boolean,
+        newDeadline?: Date | undefined
     }): Promise<boolean>
     {
         if (!this._client) {
@@ -508,7 +534,22 @@ export default class SBApi {
         }
 
         try {
-            const req: IUpdateActivityRequest = updateActivityRequest;
+            const req: IUpdateActivityRequest = {
+                isNameUpdated: updateActivityRequest.isNameUpdated,
+                newName: updateActivityRequest.newName,
+                isCompletedUpdated: updateActivityRequest.isCompletedUpdated,
+                newIsCompleted: updateActivityRequest.newIsCompleted,
+                isCompletionDateUpdated: updateActivityRequest.isCompletionDateUpdated,
+                newCompletionDate: updateActivityRequest.newCompletionDate ? updateActivityRequest.newCompletionDate.toISOString() : undefined,
+                isDurationUpdated: updateActivityRequest.isDurationUpdated,
+                newDuration: updateActivityRequest.newDuration,
+                isTypeUpdated: updateActivityRequest.isTypeUpdated,
+                newType: updateActivityRequest.newType,
+                isOrderUpdated: updateActivityRequest.isOrderUpdated,
+                newOrder: updateActivityRequest.newOrder,
+                isDeadlineUpdated: updateActivityRequest.isDeadlineUpdated,
+                newDeadline: updateActivityRequest.newDeadline ? updateActivityRequest.newDeadline.toISOString() : undefined
+            };
 
             const response = await this.put(`/modules/${moduleId}/activities/${activityId}`, req);
             if (response.status === 200) {

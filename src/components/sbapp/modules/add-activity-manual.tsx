@@ -1,7 +1,6 @@
 import {Dialog, DialogContent, DialogTitle} from "@/components/ui/dialog";
 import {useSBStore} from "@/providers/sb-store-provider";
 import {MouseEventHandler, useEffect, useState} from "react";
-import {ICourseModule} from "@/models/api/ModulesModels";
 import {Label} from "@/components/ui/label";
 import {Input} from "@/components/ui/input";
 import AKStyledCheckBox from "@/components/ui-ak/AKStyledCheckBox";
@@ -27,6 +26,7 @@ import {cn} from "@/lib/utils";
 import {format} from "date-fns";
 import {Calendar} from "@/components/ui/calendar";
 import {getActivityTypeComboBoxOptions} from "@/lib/constants/activity-type-combobox-options";
+import {ICourseModule} from "@/models/domain/ModulesModels";
 
 export type AddActivityManualProperties = {
     week: number;
@@ -114,7 +114,16 @@ export default function AddActivityManual(props: AddActivityManualProperties) {
         setIsConfirmationOpen(false);
         try {
             setLoading(true);
-            const res = await apiCreateActivity(props.moduleId, props.week, name.trim(), isCompleted, completionDate, duration, mapModuleActivityType(activityType!));
+            const res = await apiCreateActivity(
+                props.moduleId,
+                props.week,
+                name.trim(),
+                isCompleted,
+                completionDate,
+                duration,
+                mapModuleActivityType(activityType!),
+                // TODO: Add deadline
+                undefined);
             if (res) {
                 if (props.onAddSuccess) {
                     props.onAddSuccess();

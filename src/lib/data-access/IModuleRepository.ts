@@ -13,6 +13,7 @@ export interface IModuleRepository {
         name: string,
         code: string,
         totalWeeks: number,
+        startDate: Date,
         activities: {
             week: number,
             name: string,
@@ -32,7 +33,23 @@ export interface IModuleRepository {
         completionDate: Date | undefined,
         duration: number,
         type: ModuleActivityType | undefined,
+        deadline: Date | undefined,
         order: number): Promise<IModuleActivityDto | null>;
+
+    createActivities(
+        operator: string,
+        moduleId: string,
+        week: number,
+        startOrder: number,
+        activities: {
+            name: string,
+            isCompleted: boolean,
+            completionDate: Date | undefined,
+            duration: number,
+            type: ModuleActivityType | undefined,
+            deadline: Date | undefined
+        }[]
+        ): Promise<boolean | null>;
 
     updateModule(
         operator: string,
@@ -44,6 +61,8 @@ export interface IModuleRepository {
             newCode?: string,
             isTotalWeeksUpdated: boolean,
             newTotalWeeks?: number,
+            isStartDateUpdated: boolean,
+            newStartDate?: string
         },
         newVersion: number
     ): Promise<IModuleDto | null>;

@@ -1,3 +1,5 @@
+// TODO: Move to domain
+//
 export interface IUserAvailableTime {
     weeks: IUserAvailableTimeWeek[];
 }

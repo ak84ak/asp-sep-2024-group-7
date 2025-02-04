@@ -2,10 +2,10 @@ import {useSBStore} from "@/providers/sb-store-provider";
 import React, {useEffect, useState} from "react";
 import {Spinner} from "@/components/ui-ak/spinner";
 import {Button} from "@/components/ui/button";
-import {ICourseModuleActivity} from "@/models/api/ModulesModels";
 import {IPlanningWeek, IPlanningWeekAvailability} from "@/models/planning/PlanningModels";
 import dayjs from "dayjs";
 import {IPlanEvaluationResult} from "@/lib/planning/PlanEvaluator";
+import {ICourseModuleActivity} from "@/models/domain/ModulesModels";
 
 const planningGenerations = 1000;
 const populationSize = 50;

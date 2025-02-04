@@ -1,4 +1,3 @@
-import {ICourseModule, ICourseModuleActivity} from "@/models/api/ModulesModels";
 import {
     CircleCheckBigIcon,
     CircleIcon, HourglassIcon,
@@ -12,6 +11,7 @@ import {cn} from "@/lib/utils";
 import ActivityTypeIcon from "@/components/ui-ak/activity-type-icon";
 import {Badge} from "@/components/ui/badge";
 import {formatDuration} from "@/lib/ui-utils";
+import {ICourseModule, ICourseModuleActivity} from "@/models/domain/ModulesModels";
 
 export type ModulesTreeActivityProperties = {
     module: ICourseModule;

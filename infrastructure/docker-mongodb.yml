@@ -4,6 +4,7 @@ services:
   mongodb:
     image: mongo:latest
     container_name: mongodb
+    restart: always
     hostname: mongodb
     volumes:
       - ${MONGO_DATA_PATH}:/data/db/
