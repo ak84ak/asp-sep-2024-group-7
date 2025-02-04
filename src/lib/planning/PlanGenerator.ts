@@ -12,8 +12,8 @@ import {
     PopulateStrategyInterface,
     SimpleMetricsCache
 } from "genetic-search";
-import {ICourseModule, ICourseModuleActivity} from "@/models/api/ModulesModels";
-import PlanEvaluator from "@/lib/planning/PlanEvaluator";
+import PlanEvaluator, {IPlanEvaluationResult} from "@/lib/planning/PlanEvaluator";
+import {ICourseModule, ICourseModuleActivity} from "@/models/domain/ModulesModels";
 
 // TODO: Move to models folder (for now kept here for simplicity and modularity)
 interface IActivityExtended extends ICourseModuleActivity {
@@ -178,16 +178,16 @@ class ActivitiesCrossoverStrategy implements CrossoverStrategyInterface<Activiti
 export default class SBPlanGenerator {
     private generations: number;
     private populationSize: number;
-    private onIteration: ((generation: number, bestPlan: IPlanningResult) => void) | undefined;
+    private onIteration: ((generation: number, bestPlan: IPlanEvaluationResult) => void) | undefined;
 
-    constructor(generations: number, populationSize: number, onIteration?: (generation: number, bestPlan: IPlanningResult) => void) {
+    constructor(generations: number, populationSize: number, onIteration?: (generation: number, bestPlan: IPlanEvaluationResult) => void) {
         this.generations = generations;
         this.populationSize = populationSize;
         this.onIteration = onIteration;
     }
 
     // Starts the plan generation process
-    public async generatePlan(modules: ICourseModule[], availability: IWeekAvailability[], currentDate: Date, weeks: IWeek[]): Promise<IPlanningResult> {
+    public async generatePlan(modules: ICourseModule[], availability: IWeekAvailability[], currentDate: Date, weeks: IWeek[]): Promise<IPlanEvaluationResult> {
         const config: GeneticSearchConfig = {
             populationSize: this.populationSize,
             survivalRate: 0.3,

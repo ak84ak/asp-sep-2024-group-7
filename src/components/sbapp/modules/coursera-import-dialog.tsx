@@ -24,10 +24,14 @@ import {
     AlertDialogHeader,
     AlertDialogTitle
 } from "@/components/ui/alert-dialog";
+import {ICourseModule} from "@/models/domain/ModulesModels";
+
+// TODO: Move this to config
+const defaultModuleStartDate = new Date(2024, 9, 14, 12, 0, 0, 0);
 
 export type CourseraImportDialogProperties = {
     week: number;
-    moduleId: string;
+    module: ICourseModule;
     onClose: () => void;
 }
 
@@ -40,7 +44,9 @@ export default function CourseraImportDialog(props: CourseraImportDialogProperti
     const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
     const [error, setError] = useState<string>("");
 
-    const [weekStartDate, setWeekStartDate] = useState<Date>(new Date());
+    const [weekStartDate, setWeekStartDate] = useState<Date>(props.module.startDate
+        ? new Date(props.module.startDate.getTime() + 7 * 24 * 60 * 60 * 1000 * (props.week - 1))
+        : new Date(defaultModuleStartDate));
 
     const [howToExpanded, setHowToExpanded] = useState(false);
 
@@ -72,7 +78,7 @@ export default function CourseraImportDialog(props: CourseraImportDialogProperti
         setIsConfirmationOpen(false);
         try {
             setIsLoading(true);
-            const res = await apiImportCourseraActivities(props.moduleId, props.week, mappedCourseraActivities);
+            const res = await apiImportCourseraActivities(props.module.id, props.week, mappedCourseraActivities);
             if (res) {
                 if (props.onClose) {
                     props.onClose();

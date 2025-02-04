@@ -1,6 +1,6 @@
 import * as dayjs from 'dayjs'
-import {ICourseModuleActivity} from "@/models/api/ModulesModels";
 import {GenomeMetricsRow} from "genetic-search";
+import {ICourseModuleActivity} from "@/models/domain/ModulesModels";
 
 interface IActivityExtended extends ICourseModuleActivity {
     module: string;

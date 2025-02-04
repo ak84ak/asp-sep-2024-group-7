@@ -121,7 +121,7 @@ class ModuleByIdActivitiesByIdHandler extends BaseApiHandler {
             isCompletedUpdated: inReq.isCompletedUpdated,
             newIsCompleted: inReq.newIsCompleted,
             isCompletionDateUpdated: inReq.isCompletionDateUpdated,
-            newCompletionDate: inReq.newCompletionDate,
+            newCompletionDate: inReq.newCompletionDate ? new Date(inReq.newCompletionDate) : undefined,
             isDurationUpdated: inReq.isDurationUpdated,
             newDuration: inReq.newDuration,
             isTypeUpdated: inReq.isTypeUpdated,
@@ -172,7 +172,7 @@ class ModuleByIdActivitiesByIdHandler extends BaseApiHandler {
                     week: a.week,
                     name: a.name,
                     isCompleted: a.isCompleted,
-                    completionDate: a.completionDate,
+                    completionDate: a.completionDate ? a.completionDate : undefined,
                     duration: a.duration,
                     type: a.type,
                     order: a.order

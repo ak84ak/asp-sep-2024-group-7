@@ -13,6 +13,7 @@ import {
     AlertDialogTitle
 } from "@/components/ui/alert-dialog";
 import {useSBStore} from "@/providers/sb-store-provider";
+import AKDatePicker from "@/components/ui-ak/AKDatePicker";
 
 const universities: IAKComboboxOption[] = Universities.map(u => ({
     id: u.id,
@@ -24,6 +25,9 @@ export type AddModuleNewProperties = {
     onAddSuccess?: () => void;
 }
 
+// TODO: Load from DB and update each session:
+const defaultStartDate = new Date(2024, 9, 14);
+
 export default function AddModuleNew(props: AddModuleNewProperties) {
     const apiCreateModule = useSBStore((store) => store.apiCreateModule);
 
@@ -34,6 +38,8 @@ export default function AddModuleNew(props: AddModuleNewProperties) {
     const [name, setName] = useState("");
     const [code, setCode] = useState("");
     const [weeks, setWeeks] = useState(22);
+
+    const [startDate, setStartDate] = useState<Date | undefined>(new Date(defaultStartDate));
 
     const validateForm = () => {
         if (name.trim() === "") {
@@ -61,6 +67,11 @@ export default function AddModuleNew(props: AddModuleNewProperties) {
             return false;
         }
 
+        if (!startDate) {
+            setError("Invalid start date");
+            return false;
+        }
+
         return true;
     }
 
@@ -81,7 +92,7 @@ export default function AddModuleNew(props: AddModuleNewProperties) {
         setIsConfirmationOpen(false);
         try {
             setLoading(true);
-            const res = await apiCreateModule(name.trim(), code.trim(), weeks, universities[0].id, []);
+            const res = await apiCreateModule(name.trim(), code.trim(), weeks, startDate!, universities[0].id, []);
             if (res) {
                 if (props.onAddSuccess) {
                     props.onAddSuccess();
@@ -147,6 +158,18 @@ export default function AddModuleNew(props: AddModuleNewProperties) {
                                     setWeeks(v[0])
                                 }}/>
                     </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="code">First week start date</Label>
+                        <AKDatePicker
+                            className="w-full"
+                            value={startDate}
+                            onChange={(date) => {
+                                setStartDate(date);
+                                setError("");
+                            }}
+                            placeholder="Pick first week start date (Monday)"
+                        />
+                    </div>
                     {error && <div className="text-red-500 text-sm">{error}</div>}
                     <Button type="submit" className="w-full cursor-pointer" variant="outline" onClick={onAddClick}
                             disabled={loading}>
@@ -159,7 +182,7 @@ export default function AddModuleNew(props: AddModuleNewProperties) {
                     <AlertDialogHeader>
                         <AlertDialogTitle>Confirmation</AlertDialogTitle>
                         <AlertDialogDescription>
-                            This is just a confirmation that you&apos;ve entered correct details.<br />
+                            This is just a confirmation that you&apos;ve entered correct details.<br/>
                             Are you sure you want to add this module?<br/>
                             <br/>
                             <strong>Name:</strong> {name}<br/>

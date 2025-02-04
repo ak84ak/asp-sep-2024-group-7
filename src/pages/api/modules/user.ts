@@ -6,6 +6,9 @@ import IAuthUser from "@/models/api-internal/IAuthUser";
 import {IGetUserModulesResponse} from "@/models/api/ModulesModels";
 import {IModuleRepository} from "@/lib/data-access/IModuleRepository";
 
+// TODO: Move to config
+const defaultModuleStartDate = new Date(2024, 9, 14, 12, 0, 0, 0);
+
 class ModulesUserHandler extends BaseApiHandler {
     handlerName: string = "ModulesUserHandler";
 
@@ -30,13 +33,14 @@ class ModulesUserHandler extends BaseApiHandler {
                 code: m.code,
                 isCompleted: m.isCompleted,
                 totalWeeks: m.totalWeeks,
+                startDate: m.startDate ? m.startDate : defaultModuleStartDate.toISOString(),
                 activities: m.activities.map(a => ({
                     id: a.id,
                     version: a.version,
                     week: a.week,
                     name: a.name,
                     isCompleted: a.isCompleted,
-                    completionDate: a.completionDate,
+                    completionDate: a.completionDate ? a.completionDate : undefined,
                     duration: a.duration,
                     type: a.type,
                     order: a.order

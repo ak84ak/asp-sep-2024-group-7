@@ -4,6 +4,9 @@ import {IModuleRepository} from "@/lib/data-access/IModuleRepository";
 import {IModuleActivityDto, IModuleDto} from "@/models/db/IModuleDto";
 import {ModuleActivityType} from "@/models/shared/ModuleActivityType";
 
+// TODO: Move to shared constants
+const defaultModuleStartDate = new Date(2024, 9, 14, 12, 0, 0, 0);
+
 export default class MongoModuleRepository implements IModuleRepository {
     async getPredefinedModules(universityId: string): Promise<IModuleDto[] | null> {
         const db = new SBMongoDb();
@@ -27,6 +30,7 @@ export default class MongoModuleRepository implements IModuleRepository {
             code: m.code,
             isCompleted: m.isCompleted,
             totalWeeks: m.totalWeeks,
+            startDate: m.startDate ? m.startDate : defaultModuleStartDate,
             isPredefined: m.isPredefined,
             activities: []
         }))
@@ -81,6 +85,7 @@ export default class MongoModuleRepository implements IModuleRepository {
             code: dbModule.code,
             isCompleted: dbModule.isCompleted,
             totalWeeks: dbModule.totalWeeks,
+            startDate: dbModule.startDate ? dbModule.startDate : defaultModuleStartDate,
             isPredefined: dbModule.isPredefined,
             activities: []
         };
@@ -133,6 +138,7 @@ export default class MongoModuleRepository implements IModuleRepository {
             code: m.code,
             isCompleted: m.isCompleted,
             totalWeeks: m.totalWeeks,
+            startDate: m.startDate ? m.startDate : defaultModuleStartDate,
             isPredefined: m.isPredefined,
             activities: []
         }))
@@ -172,6 +178,7 @@ export default class MongoModuleRepository implements IModuleRepository {
         name: string,
         code: string,
         totalWeeks: number,
+        startDate: Date,
         activities: {
             week: number;
             name: string;
@@ -205,6 +212,7 @@ export default class MongoModuleRepository implements IModuleRepository {
                         code: code,
                         isCompleted: false,
                         totalWeeks: totalWeeks,
+                        startDate: startDate,
                         isPredefined: false
                     });
 
@@ -269,6 +277,8 @@ export default class MongoModuleRepository implements IModuleRepository {
             newCode?: string,
             isTotalWeeksUpdated: boolean,
             newTotalWeeks?: number,
+            isStartDateUpdated: boolean,
+            newStartDate?: string
         },
         newVersion: number
     ): Promise<IModuleDto | null>
@@ -282,6 +292,7 @@ export default class MongoModuleRepository implements IModuleRepository {
             name?: string;
             code?: string;
             totalWeeks?: number;
+            startDate?: string;
         } = {
             version: newVersion,
             updatedOn: new Date(),
@@ -296,6 +307,9 @@ export default class MongoModuleRepository implements IModuleRepository {
         }
         if (updateRequest.isTotalWeeksUpdated) {
             dbSet["totalWeeks"] = updateRequest.newTotalWeeks;
+        }
+        if (updateRequest.isStartDateUpdated) {
+            dbSet["startDate"] = updateRequest.newStartDate;
         }
 
         const res = await db.updateOne("modules",
@@ -377,6 +391,7 @@ export default class MongoModuleRepository implements IModuleRepository {
         completionDate: Date | undefined,
         duration: number,
         type: ModuleActivityType | undefined,
+        deadline: Date | undefined,
         order: number): Promise<IModuleActivityDto | null>
     {
 
@@ -396,6 +411,7 @@ export default class MongoModuleRepository implements IModuleRepository {
             completionDate: completionDate,
             duration: duration,
             type: type,
+            deadline: deadline ? deadline : undefined,
             order: order
         });
 
@@ -405,6 +421,54 @@ export default class MongoModuleRepository implements IModuleRepository {
         }
 
         return await this.getActivityById(activityId);
+    }
+
+    async createActivities(
+        operator: string,
+        moduleId: string,
+        week: number,
+        startOrder: number,
+        activities: {
+            name: string,
+            isCompleted: boolean,
+            completionDate: Date | undefined,
+            duration: number,
+            type: ModuleActivityType | undefined,
+            deadline: Date | undefined
+        }[]): Promise<boolean | null>
+    {
+        const db = new SBMongoDb();
+
+        const now = new Date();
+        const activitiesToInsert = [];
+
+        for (const activity of activities) {
+            activitiesToInsert.push({
+                createdOn: now,
+                createdBy: operator ?? "UNKNOWN",
+                updatedOn: now,
+                updatedBy: operator ?? "UNKNOWN",
+                version: 1,
+
+                moduleId: moduleId,
+                week: week,
+                name: activity.name,
+                isCompleted: activity.isCompleted,
+                completionDate: activity.completionDate,
+                duration: activity.duration,
+                type: activity.type,
+                deadline: activity.deadline ? activity.deadline : undefined,
+                order: startOrder++
+            });
+        }
+
+        const res = await db.insertMany("activities", activitiesToInsert);
+
+        if (!res || res.insertedCount != activities.length) {
+            throw new Error("Activities create failed");
+        }
+
+        return true;
     }
 
     async updateActivity(operator: string, activityId: string, updateRequest: {
@@ -420,6 +484,8 @@ export default class MongoModuleRepository implements IModuleRepository {
         newType?: ModuleActivityType;
         isOrderUpdated: boolean;
         newOrder?: number;
+        isDeadlineUpdated: boolean;
+        newDeadline?: Date | undefined;
     }, newVersion: number): Promise<IModuleActivityDto | null>
     {
         const db = new SBMongoDb();
@@ -434,6 +500,7 @@ export default class MongoModuleRepository implements IModuleRepository {
             duration?: number;
             type?: ModuleActivityType;
             order?: number;
+            deadline?: Date;
         } = {
             version: newVersion,
             updatedOn: new Date(),
@@ -457,6 +524,9 @@ export default class MongoModuleRepository implements IModuleRepository {
         }
         if (updateRequest.isOrderUpdated) {
             dbSet["order"] = updateRequest.newOrder;
+        }
+        if (updateRequest.isDeadlineUpdated) {
+            dbSet["deadline"] = updateRequest.newDeadline;
         }
 
         const res = await db.updateOne("activities",

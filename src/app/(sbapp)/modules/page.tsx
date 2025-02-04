@@ -64,22 +64,31 @@ export default function ModulesPage() {
                                 {isMobile ? (
                                     <div className="w-full h-full mx-auto flex flex-col items-center justify-center">
                                         <div className="text-center text-lg">
-                                            <p>We&apos;re sorry, but the modules view is not available on mobile devices in portrait mode.</p>
+                                            <p>We&apos;re sorry, but the modules view is not available on mobile devices
+                                                in portrait mode.</p>
                                             <p>We&apos;re working on it right now!</p>
-                                            <p>As a workaround, try to rotate your device to landscape mode or use laptop/desktop or tablet.</p>
+                                            <p>As a workaround, try to rotate your device to landscape mode or use
+                                                laptop/desktop or tablet.</p>
                                             <p>Sorry for the inconvenience :(</p>
                                         </div>
                                     </div>
                                 ) : (
                                     <ResizablePanelGroup direction="horizontal" className="min-h-[80svh]">
                                         <ResizablePanel defaultSize={50}>
-                                            <ModulesTree modules={modules} />
+                                            <div className="flex flex-col w-full">
+                                                <div className="text-center">
+                                                    <Button size="lg" className="my-5"
+                                                            onClick={onAddModuleClick}
+                                                    >Add module</Button>
+                                                </div>
+                                                <ModulesTree modules={modules}/>
+                                            </div>
                                         </ResizablePanel>
                                         <ResizableHandle withHandle className="bg-indigo-900 hidden sm:flex"/>
                                         <ResizablePanel defaultSize={50}>
                                             <div ref={detailsRef} className="relative px-2">
                                                 <AKSticky containerRef={detailsRef} topOffset={20} className="w-full">
-                                                    <ModulesDetailsPanel />
+                                                    <ModulesDetailsPanel/>
                                                 </AKSticky>
                                             </div>
                                         </ResizablePanel>
@@ -88,7 +97,7 @@ export default function ModulesPage() {
                             </div>
                         )}
                         {addModuleDialogOpen && (
-                            <AddModuleDialog onClose={onAddModuleDialogClose} />
+                            <AddModuleDialog onClose={onAddModuleDialogClose}/>
                         )}
                     </>
                 )}

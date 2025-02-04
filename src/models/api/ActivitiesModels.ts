@@ -1,20 +1,21 @@
 import {ModuleActivityType} from "@/models/shared/ModuleActivityType";
-import {ICourseModuleActivity} from "@/models/api/ModulesModels";
+import {ICourseModuleActivityApiModel} from "@/models/api/ModulesModels";
 
 export interface ICreateActivityRequest {
     week: number;
     name: string;
     isCompleted: boolean;
-    completionDate?: Date;
+    completionDate?: string;
     duration: number;
     type: ModuleActivityType;
+    deadline?: string;
 }
 
 export interface ICreateActivityResponse {
     success: boolean;
     error?: string;
     errorType?: string;
-    activity?: ICourseModuleActivity;
+    activity?: ICourseModuleActivityApiModel;
 }
 
 export interface IUpdateActivityRequest {
@@ -23,20 +24,22 @@ export interface IUpdateActivityRequest {
     isCompletedUpdated: boolean,
     newIsCompleted?: boolean,
     isCompletionDateUpdated: boolean,
-    newCompletionDate?: Date | undefined,
+    newCompletionDate?: string | undefined,
     isDurationUpdated: boolean,
     newDuration?: number,
     isTypeUpdated: boolean,
     newType?: ModuleActivityType,
     isOrderUpdated: boolean,
     newOrder?: number,
+    isDeadlineUpdated: boolean,
+    newDeadline?: string | undefined
 }
 
 export interface IUpdateActivityResponse {
     success: boolean;
     error?: string;
     errorType?: string;
-    activity?: ICourseModuleActivity;
+    activity?: ICourseModuleActivityApiModel;
 }
 
 export interface IDeleteActivityResponse {
@@ -47,17 +50,17 @@ export interface IDeleteActivityResponse {
 
 export interface IImportCourseraActivitiesRequest {
     week: number;
-    activities: IImportCourseraActivity[];
+    activities: IImportCourseraActivitiesRequestActivity[];
 }
 
-export interface IImportCourseraActivity {
+export interface IImportCourseraActivitiesRequestActivity {
     name: string,
     type: ModuleActivityType,
     duration: number,
     durationNotParsed: boolean,
     isCompleted: boolean,
-    completionDate?: Date
-    deadline?: Date;
+    completionDate?: string | undefined,
+    deadline?: string | undefined
 }
 
 export interface IImportCourseraActivitiesResponse {

@@ -1,9 +1,9 @@
-import {ICourseModule} from "@/models/api/ModulesModels";
 import {useState} from "react";
 import ModulesTreeModule from "@/components/sbapp/modules/modules-tree-module";
 import AddActivityManual from "@/components/sbapp/modules/add-activity-manual";
 import {toast} from "sonner";
 import CourseraImportDialog from "@/components/sbapp/modules/coursera-import-dialog";
+import {ICourseModule} from "@/models/domain/ModulesModels";
 
 export type ModulesTreeProperties = {
     modules: ICourseModule[];
@@ -64,7 +64,7 @@ export default function ModulesTree(props: ModulesTreeProperties) {
             )}
             {isImportOpen && importModuleId && importWeek !== undefined && (
                 <CourseraImportDialog week={importWeek}
-                                      moduleId={importModuleId}
+                                      module={ props.modules.find(m => m.id === importModuleId)! }
                                       onClose={() => {
                                           setIsImportOpen(false);
                                           setImportModuleId(undefined);

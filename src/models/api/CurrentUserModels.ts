@@ -1,8 +1,8 @@
 export interface IGetCurrentUserResponse {
-    user: ICurrentUser;
+    user: ICurrentUserApiModel;
 }
 
-export interface ICurrentUser {
+export interface ICurrentUserApiModel {
     id: string;
     login: string;
     email: string;
